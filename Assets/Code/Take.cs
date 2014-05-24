@@ -20,7 +20,12 @@ public class Take : MonoBehaviour {
 		{
 			sendparam.fstfinger = true;
 			sendparam.fstfingerPos = transform.position;
+			sendparam.X = transform.eulerAngles.x;
+			sendparam.Y = transform.eulerAngles.y;
+			sendparam.Z = transform.eulerAngles.z;
+
 			Debug.Log("FSTFINGER");
+			renderer.material.color = Color.red;
 		}
 	}
 	void OnTriggerExit(Collider other)
@@ -28,6 +33,7 @@ public class Take : MonoBehaviour {
 		if (other.tag == "Controlled") 
 		{
 			sendparam.fstfinger = false;
+			renderer.material.color = Color.white;
 
 		}
 	}

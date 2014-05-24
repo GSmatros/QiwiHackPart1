@@ -19,6 +19,7 @@ public class TakeEnotherFinger : MonoBehaviour {
 			sendparam.scfinger = true;
 			sendparam.scfingerPos = transform.position;
 			Debug.Log("SECFINGER");
+			renderer.material.color = Color.red;
 		}
 	}
 	void OnTriggerExit(Collider other)
@@ -26,6 +27,7 @@ public class TakeEnotherFinger : MonoBehaviour {
 		if (other.tag == "Controlled") 
 		{
 			sendparam.scfinger = false;
+			renderer.material.color = Color.white;
 		}
 	}
 }
