@@ -22,7 +22,7 @@ public class TakenParametrs : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (fstfinger && scfinger) {
+		if (fstfinger) {
 			//Vector3 newPos = new Vector3((fstfingerPos.x + scfingerPos.x)*0.5f, (fstfingerPos.y + scfingerPos.y)*0.5f, (fstfingerPos.z + scfingerPos.z)*0.5f);
 			Vector3 newPos = new Vector3(fstfingerPos.x, fstfingerPos.y, fstfingerPos.z);
 			Debug.Log(newPos);

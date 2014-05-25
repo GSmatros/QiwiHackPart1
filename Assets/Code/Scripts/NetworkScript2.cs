@@ -8,8 +8,12 @@ public class NetworkScript2 : MonoBehaviour {
 	private GameObject mainCube;
 	private bool isMainCubeLoaded;
 	private GameObject clientCube;
+	private bool isClientCubeLoaded;
+	private GameObject car;
+	private bool isCarLoaded;
 
 	private Vector3 movePos;
+	private float angleRotation;
 	float a;
 	float  b;
 	float c;
@@ -23,6 +27,7 @@ public class NetworkScript2 : MonoBehaviour {
 		menuStyle.alignment = TextAnchor.MiddleCenter;
 		appSkin = Resources.Load ("AppSkin") as GUISkin;
 		isMainCubeLoaded = false;
+		isClientCubeLoaded = false;
 	}
 	
 	// Update is called once per frame
@@ -32,10 +37,15 @@ public class NetworkScript2 : MonoBehaviour {
 		}
 
 		if (Application.loadedLevel == 1) {
+			Debug.Log(car);
+			if(!isCarLoaded){
+				car = GameObject.Find("bok_lewy03") as GameObject;
+				isCarLoaded = true;
+			}
 			if(Network.isServer){
 				if(!isMainCubeLoaded){
 					mainCube = GameObject.Find("Cube1") as GameObject;
-					clientCube = GameObject.Find("Cube2") as GameObject;
+
 					isMainCubeLoaded = true;
 				}
 				Debug.Log(mainCube);
@@ -52,10 +62,17 @@ public class NetworkScript2 : MonoBehaviour {
 					c = mainCube.transform.position.z;
 					NetworkViewID viewID = Network.AllocateViewID();
 					networkView.RPC("SendMessagePos", RPCMode.All, mainCube.transform.position);
+					networkView.RPC("SendRotation", RPCMode.All, mainCube.transform.eulerAngles.y);
 				}
 			}
 			if(Network.isClient){
-				clientCube.transform.position = movePos;	
+				if(!isClientCubeLoaded){
+					clientCube = GameObject.Find("Cube2") as GameObject;
+					isClientCubeLoaded = true;
+				}
+
+				clientCube.transform.position = movePos;
+				clientCube.transform.rotation = Quaternion.Euler(0, angleRotation,0);
 			}
 		}
 	}
@@ -78,10 +95,24 @@ public class NetworkScript2 : MonoBehaviour {
 		}
 
 		if (Application.loadedLevel == 1) {
-			if(GUI.Button(new Rect(700, 430, 100, 50), "    Back")){
+			/*if(GUI.Button(new Rect(700, 430, 100, 50), "    Back")){
 				Application.LoadLevel (0);
+			}*/
+
+			if(GUI.Button(new Rect(0,150,200,100), "Red")){
+				car.renderer.material.color = Color.red;
+			}
+			if(GUI.Button(new Rect(0,270,200,100), "Green")){
+				car.renderer.material.color = Color.green;
+			}
+			if(GUI.Button(new Rect(0,380,200,100), "White")){
+				car.renderer.material.color = Color.white;
 			}
 			if(Network.isServer){
+				if(GUI.Button(new Rect(0,0,200,100), "Reset")){
+					mainCube.transform.localPosition = new Vector3(0,0.7f,-5.0f);
+					mainCube.transform.rotation = Quaternion.Euler(0,0,0);
+				}
 				GUI.Label(new Rect(0,0,400,50), "Server");	
 				GUI.Label(new Rect(0,50,400,50), mainCube.transform.position.x.ToString()
 				          +  mainCube.transform.position.y.ToString()
@@ -102,7 +133,10 @@ public class NetworkScript2 : MonoBehaviour {
 		movePos = baget;
 	}
 
-
+	[RPC]
+	void SendRotation(float angle){
+		angleRotation = angle;
+	}
 
 
 
