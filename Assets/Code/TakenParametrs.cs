@@ -12,7 +12,7 @@ public class TakenParametrs : MonoBehaviour {
 	public float Z = 0.0f;
 	float XPoint = 0.0f;
 	float ZPoint = 0.0f;
-	public GameObject Where;
+
 
 	// Use this for initialization
 	void Start () {
@@ -29,7 +29,7 @@ public class TakenParametrs : MonoBehaviour {
 			transform.eulerAngles = new Vector3(transform.rotation.x,Y,transform.rotation.x); 
 			transform.position = newPos;
 			Debug.Log("PUSHED");
-			Where.gameObject.renderer.enabled = true;
+//			Where.gameObject.renderer.enabled = true;
 			RaycastHit hit;
 			if (Physics.Raycast(transform.position, Vector3.down, out hit))
 			{
@@ -37,7 +37,7 @@ public class TakenParametrs : MonoBehaviour {
 				{
 					XPoint = hit.point.x;
 					ZPoint = hit.point.z;
-					Where.transform.position = new Vector3(hit.point.x, 0.3f, hit.point.z);
+				    transform.position = new Vector3(hit.point.x, 0.3f, hit.point.z);
 					
 				}
 			}
@@ -49,8 +49,8 @@ public class TakenParametrs : MonoBehaviour {
 
 		if (!fstfinger || !scfinger) {
 			//renderer.material.color = Color.white;
-			transform.position = new Vector3(XPoint, 1.4f, ZPoint);
-			Where.gameObject.renderer.enabled = false;
+			//transform.position = new Vector3(XPoint, 1.4f, ZPoint);
+//			Where.gameObject.renderer.enabled = false;
 
 				}
 
