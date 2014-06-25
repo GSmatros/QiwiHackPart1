@@ -1,1 +1,1 @@
-hakathon soures only in Assets/Code
+All the classes (scripts) only in Assets/Code
