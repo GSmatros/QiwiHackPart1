@@ -15,7 +15,7 @@ public class OnStop : MonoBehaviour {
 	void OnTriggerEnter(Collider other)
 	{
 
-		if (other.tag == "Image" || other.tag == "Directory")
+		if (other.tag == "Image" || other.tag == "Directory" || other.tag == "Presentation")
 		{
 			//Debug.Log("stop");
 			other.rigidbody.isKinematic = true;

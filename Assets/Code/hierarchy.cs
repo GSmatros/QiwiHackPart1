@@ -6,6 +6,7 @@ public class hierarchy : MonoBehaviour {
 
 	public GameObject DirectoryVis;
 	public GameObject ImageVis;
+	public GameObject PrVis;
 	public GameObject DirectoryBack;
 	public TextMesh NowPos;
 	string NewNameDir = "New_folder_";
@@ -71,7 +72,7 @@ public class hierarchy : MonoBehaviour {
 		Image image = new Image("New Album", textur);
 		ListImg.Add(image);
 
-		Presentation present = new Presentation("New presentation");
+		Presentation present = new Presentation("New_presentation");
 
 		ListPr.Add(present);
 
@@ -84,7 +85,7 @@ public class hierarchy : MonoBehaviour {
 		dir.AddChildDirectory("Another Presentation");
 		ListDir.Add(dir);
 		dir = new Directory("New Directory(1)","Presentation");
-		dir.AddChildPresentation("New presentation");
+		dir.AddChildPresentation("New_presentation");
 		ListDir.Add(dir);
 		dir = new Directory("New Directory(1)","Another Presentation");
 		dir.AddChildImage("New Album");
@@ -246,5 +247,25 @@ public class hierarchy : MonoBehaviour {
 				}
 			}
 		}
+
+		foreach(string foundPr in neededDir.insertPresentations)
+		{
+			foreach(Presentation nPresent in ListPr)
+			{
+				if (foundPr == nPresent.Name)
+				{
+					GameObject newPresent = Instantiate(PrVis) as GameObject;
+					newPresent.transform.parent = DirectoryBack.transform;
+					newPresent.transform.localPosition = new Vector3(x,2.1f,z);
+					newPresent.rigidbody.AddForce(new Vector3(0, -950.0f,0));
+					newPresent.SendMessage("Rename", foundPr);
+					//newImage.SendMessage("GetTxt", nImage.TextureImage);
+					x += 0.35f;
+				}
+			}
+		}
+
+
+
 	}
 }

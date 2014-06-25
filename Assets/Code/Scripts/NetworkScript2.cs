@@ -14,6 +14,15 @@ public class NetworkScript2 : MonoBehaviour {
 	private bool isCarLoaded;
 	private string ServerIPAddress = "";
 	private bool isClientReady = false;
+	private bool isLevelChosen1 = false;
+	private bool isLevelChosen2 = false;
+	private int levelToLoad;
+	public bool isLevelToLoadReceived1 = false;
+	public bool isLevelToLoadReceived2 = false;
+	private bool speakerChosingScene = false;
+
+	private float width = Screen.width;
+	private float height = Screen.height;
 
 	private Vector3 movePos;
 	private float angleRotation;
@@ -42,24 +51,42 @@ public class NetworkScript2 : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		//Debug.Log(isLevelToLoadReceived);
 		NetworkViewID viewID = Network.AllocateViewID();
 		if (Application.loadedLevel == 0) {
-			
+			if(Network.isClient){
+				if(isClientReady && isLevelToLoadReceived1){
+					Application.LoadLevel(levelToLoad);
+				}
+			}
 		}
 
 		if(Application.loadedLevel == 1){
-			networkView.RPC("ChangeScene", RPCMode.All, Application.loadedLevel);
+			if(Network.isServer){
+				if(!isLevelChosen1){
+					networkView.RPC("ChangeScene", RPCMode.All, Application.loadedLevel);
+					isLevelChosen1 = true;
+				}
+			}
+
+			if(Network.isClient){
+				if(isLevelToLoadReceived2){
+					Application.LoadLevel(levelToLoad);
+				}
+			}
 		}
 
 		if (Application.loadedLevel == 2) {
-			Debug.Log(car);
+
 			if(!isCarLoaded){
 				car = GameObject.Find("bok_lewy03") as GameObject;
 				isCarLoaded = true;
 			}
 			if(Network.isServer){
-
-				networkView.RPC("ChangeScene", RPCMode.All, Application.loadedLevel);
+				if(!isLevelChosen2){
+					networkView.RPC("ChangeScene", RPCMode.All, Application.loadedLevel);
+					isLevelChosen2 = true;
+				}
 				if(!isMainCubeLoaded){
 					mainCube = GameObject.Find("Cube1") as GameObject;					
 					isMainCubeLoaded = true;
@@ -88,10 +115,7 @@ public class NetworkScript2 : MonoBehaviour {
 					isClientCubeLoaded = true;
 				}
 
-
 				clientCube.transform.position = movePos;
-
-
 				clientCube.transform.rotation = Quaternion.Euler(0, angleRotation,0);
 			}
 		}
@@ -99,21 +123,37 @@ public class NetworkScript2 : MonoBehaviour {
 	
 	void OnGUI(){
 		GUI.skin = appSkin;
+
+		GUI.Label(new Rect(width * 0.5f,0, width * 0.1f, height * 0.1f), Application.loadedLevel.ToString());
 		if (Application.loadedLevel == 0) {
-			if (GUI.Button (new Rect (300, 330, 200, 50), "      Speaker")) {
+			if (GUI.Button (new Rect (width * 0.375f, height * 0.6875f, width * 0.25f,height * 0.1f), "      Speaker")) {
 				bool useNat = !Network.HavePublicAddress ();
 				Network.InitializeServer (32, 25000, useNat);
-				Application.LoadLevel(1);			
+				speakerChosingScene = true;
+				//Application.LoadLevel(1);			
 			}
-			if (GUI.Button (new Rect (300, 410, 200, 50), "      Audience")) {
+
+			if(Network.isServer && speakerChosingScene){
+				GUI.Label(new Rect(0, height * 0.21f, width * 0.125f, height * 0.05f), Network.player.ipAddress);
+				if (GUI.Button (new Rect (width * 0.375f, height * 0.48f,  width * 0.25f, height * 0.1f), "   Start")) {
+					Application.LoadLevel(1);
+				}
+			}
+
+
+			if (GUI.Button (new Rect (width * 0.375f, height * 0.85f, width * 0.25f, height * 0.1f), "      Audience")) {
 				Network.Connect (ServerIPAddress, 25000);
 				//Application.LoadLevel(1);
 			}
-			if (GUI.Button (new Rect (10, 410, 200, 50), "      Quit")) {
-				Application.Quit();
+			if (GUI.Button (new Rect (0, height * 0.85f, width * 0.25f, height * 0.1f), "      Quit")) {
+				Application.LoadLevel(0);
 			}
 
-			ServerIPAddress = GUI.TextField(new Rect(0,0,100,25), ServerIPAddress, 15);
+			if(isClientReady && Network.isClient){
+				GUI.Label(new Rect(0,0, width, height * 0.05f), "Wait for the speaker");
+			}
+
+			ServerIPAddress = GUI.TextField(new Rect(0,0, width * 0.125f, height * 0.05f), ServerIPAddress, 15);
 		}
 		
 		if (Application.loadedLevel == 2) {
@@ -121,35 +161,35 @@ public class NetworkScript2 : MonoBehaviour {
 				Application.LoadLevel (0);
 			}*/
 			
-			if(GUI.Button(new Rect(0,100,150,75), "Red")){
+			if(GUI.Button(new Rect(0,height * 0.21f, width * 0.1875f,height * 0.15f), "Red")){
 				car.renderer.material.color = Color.red;
 			}
-			if(GUI.Button(new Rect(0,200,150,75), "Green")){
+			if(GUI.Button(new Rect(0,height * 0.42f, width * 0.1875f,height * 0.15f), "Green")){
 				car.renderer.material.color = Color.green;
 			}
-			if(GUI.Button(new Rect(0,300,150,75), "White")){
+			if(GUI.Button(new Rect(0,height * 0.63f, width * 0.1875f,height * 0.15f), "White")){
 				car.renderer.material.color = Color.white;
 			}
-			if(GUI.Button(new Rect(0,400, 150, 75), "    Quit")){
+			if(GUI.Button(new Rect(0,height * 0.84f, width * 0.1875f, height * 0.15f), "    Quit")){
 				Application.Quit();
 			}
 			if(Network.isServer){
-				if(GUI.Button(new Rect(0,0,150,75), "Reset")){
+				if(GUI.Button(new Rect(0,0, width * 0.1875f,height * 0.15f), "Reset")){
 					//mainCube.transform.localPosition = new Vector3(0,0.7f,-5.0f);
 					//mainCube.transform.rotation = Quaternion.Euler(0,0,0);
 				}
-				GUI.Label(new Rect(0,0,400,50), "Server");	
-				GUI.Label(new Rect(200,200,400,50), mainCube.transform.position.x.ToString()
+				GUI.Label(new Rect(0,0, width * 0.5f,50), "Server");	
+				GUI.Label(new Rect(width * 0.25f,height * 0.42f, width * 0.5f,height * 0.1f), mainCube.transform.position.x.ToString()
 				          +  mainCube.transform.position.y.ToString()
 				          +  mainCube.transform.position.z.ToString());
 			}
 			if(Network.isClient){
-				GUI.Label(new Rect(0,0,400,50), "Client");	
+				GUI.Label(new Rect(0,0,width * 0.5f,height * 0.1f), "Client");	
 				//GUI.Label(new Rect(0,50,400,50), a1.ToString() + b1.ToString() + c1.ToString());
-				GUI.Label(new Rect(0,50,400,50),movePos.x.ToString() + " " + movePos.y.ToString() + " " + movePos.z.ToString());
-				GUI.Label(new Rect(0,100,400,50),angleRotation.ToString());
+				GUI.Label(new Rect(0,height * 0.1f,width * 0.5f,height * 0.1f),movePos.x.ToString() + " " + movePos.y.ToString() + " " + movePos.z.ToString());
+				GUI.Label(new Rect(0,height * 0.21f,width * 0.5f,height * 0.1f),angleRotation.ToString());
 				//clientCube.transform.position = movePos;
-				GUI.Label(new Rect(0,150,400,50), clientCube.transform.position.x.ToString()
+				GUI.Label(new Rect(0,height * 0.42f,width * 0.5f,height * 0.1f), clientCube.transform.position.x.ToString()
 				          + " " + clientCube.transform.position.y.ToString()
 				          + " " + clientCube.transform.position.z.ToString());
 				Debug.Log(movePos);
@@ -180,15 +220,18 @@ public class NetworkScript2 : MonoBehaviour {
 	}
 
 	[RPC]
-	void ChangeScene(int levelNumber){
-		if(isClientReady && Network.isClient){
-			Application.LoadLevel (levelNumber);
+	public void ChangeScene(int levelNumber){
+		levelToLoad = levelNumber;
+		if(levelNumber == 1){
+			isLevelToLoadReceived1 = true;
+		}
+		else {
+			isLevelToLoadReceived2 = true;
 		}
 	}
 	
 	void OnConnectedToServer(){
 		PlayerPrefs.SetString ("IPAddress", ServerIPAddress);
-		GUI.Label(new Rect(0,0,800,25), "Wait for the speaker");
 		isClientReady = true;
 		//Application.LoadLevel(2);
 		//Debug.Log("CONNECTED");
@@ -196,7 +239,7 @@ public class NetworkScript2 : MonoBehaviour {
 	
 	void OnFailedToConnect(){
 		//connectionFailed = true;
-		GUI.Label(new Rect(0,0,800,25), "Failed to connect. Wrong IP address");
+		GUI.Label(new Rect(0,0,width,height * 0.05f), "Failed to connect. Wrong IP address");
 		//Debug.Log("FAILED");
 	}
 	

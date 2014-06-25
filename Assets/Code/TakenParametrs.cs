@@ -14,6 +14,7 @@ public class TakenParametrs : MonoBehaviour {
 	float ZPoint = 0.0f;
 
 
+
 	// Use this for initialization
 	void Start () {
 	
@@ -22,11 +23,11 @@ public class TakenParametrs : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (fstfinger) {
+		if (fstfinger && scfinger) {
 			//Vector3 newPos = new Vector3((fstfingerPos.x + scfingerPos.x)*0.5f, (fstfingerPos.y + scfingerPos.y)*0.5f, (fstfingerPos.z + scfingerPos.z)*0.5f);
-			Vector3 newPos = new Vector3(fstfingerPos.x, fstfingerPos.y, fstfingerPos.z);
+			Vector3 newPos = new Vector3((fstfingerPos.x + scfingerPos.x)/2, (fstfingerPos.y + scfingerPos.y)/2, (fstfingerPos.z + scfingerPos.z)/2);
 			Debug.Log(newPos);
-			transform.eulerAngles = new Vector3(transform.rotation.x,Y,transform.rotation.x); 
+			//transform.eulerAngles = new Vector3(transform.rotation.x,Y,transform.rotation.x); 
 			transform.position = newPos;
 			Debug.Log("PUSHED");
 //			Where.gameObject.renderer.enabled = true;
@@ -47,14 +48,24 @@ public class TakenParametrs : MonoBehaviour {
 
 
 
-		if (!fstfinger || !scfinger) {
+		if (fstfinger && !scfinger) 
+		{
+
+			//float angle = transform.eulerAngles.y;
+			transform.eulerAngles = new Vector3(transform.eulerAngles.x, Y,transform.eulerAngles.x); 
 			//renderer.material.color = Color.white;
 			//transform.position = new Vector3(XPoint, 1.4f, ZPoint);
 //			Where.gameObject.renderer.enabled = false;
 
-				}
+		}
+
+
 
 
 	}
+
+
+
+
 
 }

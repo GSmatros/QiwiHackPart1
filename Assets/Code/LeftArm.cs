@@ -7,6 +7,7 @@ public class LeftArm : MonoBehaviour {
 	bool insert = false;
 	GameObject dropList;
 	public GameObject DiretoryBack; 
+	TakenParametrs TakeP;
 	// Use this for initialization
 	void Start () {
 	
@@ -55,8 +56,33 @@ public class LeftArm : MonoBehaviour {
 			}
 
 		}
+
+		if (other.tag == "Controlled")
+		{
+			TakeP = other.GetComponent<TakenParametrs>();
+			TakeP.scfinger = true;
+			renderer.material.color = Color.cyan;
+		}
 	}
 
+	void OnTriggerStay (Collider other)
+	{
+		if (other.tag == "Controlled")
+		{
+			TakeP.scfingerPos = transform.position;
+
+		}
+	}
+
+
+	void OnTriggerExit (Collider other)
+	{
+		if (other.tag == "Controlled")
+		{
+			TakeP.scfinger = false;
+			renderer.material.color = Color.yellow;
+		}
+	}
 
 	// Update is called once per frame
 

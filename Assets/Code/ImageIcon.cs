@@ -16,6 +16,7 @@ public class ImageIcon : MonoBehaviour {
 	public List<GameObject> imageList = new List<GameObject>();
 	private bool isAlbumOpen = false;
 	public List<Texture> textureList = new List<Texture>();
+	public GameObject albumName;
 
 	// Use this for initialization
 	void Start () {
@@ -49,12 +50,17 @@ public class ImageIcon : MonoBehaviour {
 		}
 
 		if(isAlbumOpen){
-			if(Input.GetKeyDown(KeyCode.RightArrow)){
+			/*if(Input.GetKeyDown(KeyCode.RightArrow)){
 				SwipeRight();
 			}
 			if(Input.GetKeyDown(KeyCode.LeftArrow)){
 				SwipeLeft();
-			}
+			}*/
+
+			albumName.renderer.enabled = false;
+		}
+		else {
+			albumName.renderer.enabled = true;
 		}
 		
 	}
@@ -157,6 +163,7 @@ public class ImageIcon : MonoBehaviour {
 		foreach (GameObject vvr in imageList){
 			Destroy(vvr);
 		}
+		isAlbumOpen = false;
 	}
 
 
